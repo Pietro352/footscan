@@ -83,15 +83,25 @@ const oldMatches = Array.isArray(previous?.matches) ? previous.matches : [];
 const byId = new Map();
 let failed = 0;
 
+// ESPN no longer supports date ranges (dates=FROM-TO returns 400).
+// Fetch one day at a time per league.
+const dates = [];
+for (let d = -DAYS_BACK; d <= DAYS_AHEAD; d++) dates.push(ymd(d));
+
 for (const league of LEAGUES) {
-  const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league.slug}/scoreboard?dates=${from}-${to}&limit=400`;
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const payload = await res.json();
-    for (const ev of payload.events || []) {
-      const m = normalize(ev, league);
-      if (m) byId.set(m.id, m);
+    const dayResults = await Promise.all(dates.map(async (date) => {
+      const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league.slug}/scoreboard?dates=${date}&limit=400`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const payload = await res.json();
+      return payload.events || [];
+    }));
+    for (const events of dayResults) {
+      for (const ev of events) {
+        const m = normalize(ev, league);
+        if (m) byId.set(m.id, m);
+      }
     }
   } catch (err) {
     failed++;

@@ -827,8 +827,8 @@
 
         const ymd = date => formatDate(date).replace(/-/g, '');
 
-        async function fetchLeague(league, from, to) {
-            const url = `${ESPN_URL}/${league.slug}/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=400`;
+        async function fetchLeague(league, date) {
+            const url = `${ESPN_URL}/${league.slug}/scoreboard?dates=${ymd(date)}&limit=400`;
             const response = await fetch(url, { cache: 'no-store' });
             if (!response.ok) throw new Error(`ESPN ha risposto ${response.status}`);
             const payload = await response.json();
@@ -836,8 +836,22 @@
         }
 
         async function fetchRange(from, to) {
-            const results = await Promise.allSettled(leagues.map(l => fetchLeague(l, from, to)));
-            const okCodes = leagues.filter((_, i) => results[i].status === 'fulfilled').map(l => l.code);
+            // ESPN no longer supports date ranges — fetch one day at a time
+            const dates = [];
+            for (let d = new Date(from); d <= to; d = addDays(d, 1)) {
+                dates.push(new Date(d));
+            }
+            // One promise per league: each fetches all days in parallel
+            const tasks = [];
+            const taskLeagues = [];
+            for (const league of leagues) {
+                const leaguePromise = Promise.all(dates.map(date => fetchLeague(league, date)))
+                    .then(arrays => arrays.flat());
+                tasks.push(leaguePromise);
+                taskLeagues.push(league);
+            }
+            const results = await Promise.allSettled(tasks);
+            const okCodes = taskLeagues.filter((_, i) => results[i].status === 'fulfilled').map(l => l.code);
             return {
                 matches: results.flatMap(r => (r.status === 'fulfilled' ? r.value : [])),
                 okCodes,

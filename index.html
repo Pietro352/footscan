@@ -278,6 +278,180 @@
             color: var(--muted);
         }
 
+
+        /* Stemmi: sempre in un cerchio, con iniziali se l'immagine non si carica */
+        .crest {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            font-size: 1rem;
+            border-radius: 50%;
+            background: #ececea;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .crest.lg { width: 52px; height: 52px; font-size: 1.3rem; }
+        .crest.sm { width: 22px; height: 22px; font-size: 0.8rem; }
+
+        .crest img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 15%;
+        }
+
+        .crest.noimg img {
+            display: none;
+        }
+
+        .crest.noimg::after {
+            content: attr(data-initials);
+            color: #26282c;
+            font-size: 0.62em;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        /* Stella "squadra preferita" */
+        .star {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            display: grid;
+            place-items: center;
+            background: none;
+            border: 0;
+            border-radius: 50%;
+            color: var(--muted);
+            cursor: pointer;
+            opacity: 0.45;
+            transition: opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+        }
+
+        .star svg { fill: none; stroke: currentColor; }
+
+        .star:hover { color: var(--amber); background: var(--surface); opacity: 1; }
+
+        .star[aria-pressed="true"] { color: var(--amber); opacity: 1; }
+        .star[aria-pressed="true"] svg { fill: currentColor; }
+
+        @media (hover: hover) {
+            .star:not([aria-pressed="true"]) { opacity: 0; }
+            .row:hover .star:not([aria-pressed="true"]), .star:focus-visible { opacity: 0.8; }
+            .row:hover .star:not([aria-pressed="true"]):hover { opacity: 1; }
+        }
+
+        /* Partite della squadra preferita, evidenziate nelle liste */
+        .match.has-fav {
+            box-shadow: inset 3px 0 0 var(--amber);
+        }
+
+        .row.fav .name {
+            color: var(--amber);
+            font-weight: 600;
+        }
+
+        .row.fav.lose .name { opacity: 0.7; }
+
+        /* Barra della squadra preferita */
+        .favbar {
+            align-self: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--amber);
+            border-radius: 999px;
+            padding: 5px 6px;
+            font-size: 0.9rem;
+        }
+
+        .favbar[hidden] { display: none; }
+        .favbar .label { color: var(--muted); }
+        .favbar .fname { font-weight: 600; color: var(--amber); }
+
+        .favbar button {
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--muted);
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .favbar button:hover { color: var(--text); border-color: var(--muted); }
+
+        .favhint {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        /* Sezione "La tua squadra" */
+        .favcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 12px;
+        }
+
+        .favcard {
+            border: 1px solid var(--amber);
+            border-radius: 14px;
+            background: rgba(233, 179, 95, 0.06);
+            padding: 20px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .favcard .match-top .tag { color: var(--amber); font-weight: 600; }
+
+        .versus {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+            min-width: 0;
+            font-weight: 500;
+            line-height: 1.25;
+        }
+
+        .side.me .sname { color: var(--amber); font-weight: 600; }
+        .side.lose .sname { color: var(--muted); }
+
+        .mid {
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .mid .big { font-size: 2.1rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
+        .mid .small { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+
+        #updated { font-variant-numeric: tabular-nums; }
+
+        @media (max-width: 680px) {
+            .favcards { grid-template-columns: 1fr; }
+            .favcard { padding: 18px 16px 20px; }
+        }
+
         /* Notes: loading, empty, error */
         .note {
             border: 1px solid var(--line);
@@ -374,8 +548,17 @@
                     </button>
                     <button id="todayBtn" class="today">Oggi</button>
                 </div>
+                <div class="favbar" id="favBar" hidden></div>
                 <div class="chips" id="leagueFilterContainer" role="group" aria-label="Competizioni"></div>
+                <p class="favhint" id="favHint">Tocca la stella accanto a una squadra per sceglierla come preferita.</p>
             </div>
+
+            <section class="section" id="favSection" hidden>
+                <div class="section-head">
+                    <h2>La tua squadra</h2>
+                </div>
+                <div id="favContainer"></div>
+            </section>
 
             <section class="section">
                 <div class="section-head">
@@ -405,32 +588,41 @@
 
         <footer>
             <span>Made by HappyDeveloper</span>
-            <span>Dati da football-data.org · aggiornamento ogni ~10 minuti</span>
+            <span>Dati da ESPN · <span id="updated">aggiornamento in corso…</span></span>
         </footer>
     </div>
 
     <script>
-        // Dati aggiornati da GitHub Actions (vedi .github/workflows/update-matches.yml)
-        const DATA_URL = 'data/matches.json';
-        const REFRESH_MS = 60000;
-        const CACHE_MS = 45000;
+        // I dati live arrivano da ESPN (API pubblica, senza chiave) direttamente dal browser.
+        // Se ESPN non fosse raggiungibile si ripiega su data/matches.json (aggiornato da GitHub Actions).
+        const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer';
+        const FALLBACK_URL = 'data/matches.json';
+        const FAV_KEY = 'footscan:favorite';
+
+        const DAYS_BACK = 3;
+        const DAYS_AHEAD = 6;
+        const LIVE_REFRESH_MS = 45000;   // con partite in corso o in partenza
+        const IDLE_REFRESH_MS = 180000;  // altrimenti
+        const FULL_REFRESH_MS = 300000;  // ricarica completa della finestra di giorni
 
         const LIVE_STATUSES = ['IN_PLAY', 'PAUSED', 'LIVE'];
         const UPCOMING_STATUSES = ['SCHEDULED', 'TIMED'];
 
         const leagues = [
-            { code: 'WC', name: 'Mondiali' },
-            { code: 'EC', name: 'Europei' },
-            { code: 'CL', name: 'Champions League' },
-            { code: 'SA', name: 'Serie A' },
-            { code: 'PL', name: 'Premier League' },
-            { code: 'PD', name: 'La Liga' },
-            { code: 'BL1', name: 'Bundesliga' },
-            { code: 'FL1', name: 'Ligue 1' },
-            { code: 'ELC', name: 'Championship' },
-            { code: 'DED', name: 'Eredivisie' },
-            { code: 'PPL', name: 'Primeira Liga' },
-            { code: 'BSA', name: 'Brasile Serie A' }
+            { slug: 'fifa.world', code: 'WC', name: 'Mondiali' },
+            { slug: 'uefa.euro', code: 'EC', name: 'Europei' },
+            { slug: 'uefa.champions', code: 'CL', name: 'Champions League' },
+            { slug: 'uefa.europa', code: 'EL', name: 'Europa League' },
+            { slug: 'uefa.europa.conf', code: 'ECL', name: 'Conference League' },
+            { slug: 'ita.1', code: 'SA', name: 'Serie A' },
+            { slug: 'eng.1', code: 'PL', name: 'Premier League' },
+            { slug: 'esp.1', code: 'PD', name: 'La Liga' },
+            { slug: 'ger.1', code: 'BL1', name: 'Bundesliga' },
+            { slug: 'fra.1', code: 'FL1', name: 'Ligue 1' },
+            { slug: 'eng.2', code: 'ELC', name: 'Championship' },
+            { slug: 'ned.1', code: 'DED', name: 'Eredivisie' },
+            { slug: 'por.1', code: 'PPL', name: 'Primeira Liga' },
+            { slug: 'bra.1', code: 'BSA', name: 'Brasile Serie A' }
         ];
 
         const containers = {
@@ -448,12 +640,31 @@
             past: 'Nessun risultato per questa data e competizione.',
             upcoming: 'Nessuna partita in programma nei prossimi giorni.'
         };
+        const favBar = document.getElementById('favBar');
+        const favHint = document.getElementById('favHint');
+        const favSection = document.getElementById('favSection');
+        const favContainer = document.getElementById('favContainer');
+        const updatedEl = document.getElementById('updated');
 
+        // ---- Stato ----
+        const store = new Map();          // id partita -> partita normalizzata
+        let source = 'live';              // 'live' (ESPN) oppure 'archive' (data/matches.json)
+        let loaded = false;
+        let windowFrom = '';
+        let windowTo = '';
+        let lastUpdate = null;
+        let lastFull = 0;
+        let failedLeagues = 0;
+        let liveError = false;
         let currentDate = new Date();
         let selectedLeague = null;
         let requestId = 0;
-        const cache = new Map();
+        let inflight = null;
+        let tickTimer = null;
+        let favorite = readFavorite();
+        const lastHtml = {};
 
+        // ---- Utilità ----
         function formatDate(date) {
             const yyyy = date.getFullYear();
             const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -479,124 +690,253 @@
             });
         }
 
-        function renderLeagueFilters() {
-            const container = document.getElementById('leagueFilterContainer');
-            container.innerHTML = '';
-            const all = [{ code: '', name: 'Tutte' }, ...leagues];
-            all.forEach(league => {
-                const btn = document.createElement('button');
-                btn.className = 'chip';
-                btn.type = 'button';
-                btn.textContent = league.name;
-                btn.dataset.league = league.code;
-                if ((selectedLeague || '') === league.code) btn.classList.add('active');
-                btn.addEventListener('click', () => {
-                    container.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedLeague = league.code || null;
-                    load();
-                });
-                container.appendChild(btn);
-            });
+        function byTime(a, b) {
+            return String(a.utcDate || '').localeCompare(String(b.utcDate || ''));
         }
 
-        // Il file JSON è aggiornato da GitHub Actions: lo si scarica una volta
-        // e le partite del giorno si ricavano filtrando (data locale + competizione).
-        let dataPromise = null;
-        let dataTime = 0;
+        const isLive = m => LIVE_STATUSES.includes(m.status);
+        const isUpcoming = m => UPCOMING_STATUSES.includes(m.status);
+        const isFinished = m => m.status === 'FINISHED' || m.status === 'AWARDED';
 
-        function loadData() {
-            if (dataPromise && Date.now() - dataTime < CACHE_MS) return dataPromise;
-            dataTime = Date.now();
-            dataPromise = fetch(`${DATA_URL}?v=${Date.now()}`, { cache: 'no-store' })
-                .then(response => {
-                    if (!response.ok) throw new Error('File dei dati non trovato. Esegui il workflow "Aggiorna partite" su GitHub.');
-                    return response.json();
-                })
-                .then(data => ({
-                    from: data.from || '',
-                    to: data.to || '',
-                    matches: Array.isArray(data.matches) ? data.matches : []
-                }))
-                .catch(error => {
-                    dataPromise = null;
-                    throw error;
-                });
-            return dataPromise;
+        // ---- Squadra preferita ----
+        function readFavorite() {
+            try {
+                const value = JSON.parse(localStorage.getItem(FAV_KEY) || 'null');
+                return value && value.key ? value : null;
+            } catch (e) {
+                return null;
+            }
         }
 
-        function matchesForDay(data, date) {
+        function saveFavorite() {
+            try {
+                if (favorite) localStorage.setItem(FAV_KEY, JSON.stringify(favorite));
+                else localStorage.removeItem(FAV_KEY);
+            } catch (e) { /* storage non disponibile: la scelta vale solo per questa sessione */ }
+        }
+
+        const teamKey = team => String(team?.id || team?.name || '');
+
+        function isFav(team) {
+            if (!favorite || !team) return false;
+            return teamKey(team) === favorite.key || (!!team.name && team.name === favorite.name);
+        }
+
+        function findTeam(key) {
+            for (const m of store.values()) {
+                if (teamKey(m.homeTeam) === key) return m.homeTeam;
+                if (teamKey(m.awayTeam) === key) return m.awayTeam;
+            }
+            return null;
+        }
+
+        function favoriteTeam() {
+            return findTeam(favorite.key) || { id: favorite.key, name: favorite.name, logo: favorite.logo };
+        }
+
+        function toggleFavorite(key, name) {
+            if (favorite && (favorite.key === key || favorite.name === name)) {
+                favorite = null;
+            } else {
+                const team = findTeam(key);
+                favorite = { key, name: team?.name || name, logo: team?.logo || '' };
+            }
+            saveFavorite();
+            render();
+        }
+
+        // ---- Stemmi in un cerchio (con iniziali se l'immagine manca o non si carica) ----
+        const SKIP_WORDS = new Set(['fc', 'ac', 'cf', 'sc', 'afc', 'ssc', 'us', 'as', 'rc', 'sk', 'fk', 'cd', 'ud', 'de', 'da', 'di', 'del', 'la', 'le', 'the', 'club', 'clube']);
+
+        function initials(name) {
+            const all = String(name || '?').replace(/[^\p{L}\p{N} ]/gu, ' ').split(/\s+/).filter(Boolean);
+            const words = all.filter(w => !SKIP_WORDS.has(w.toLowerCase()));
+            const use = words.length ? words : all;
+            if (!use.length) return '?';
+            return (use.length === 1 ? use[0].slice(0, 3) : use[0][0] + use[1][0]).toUpperCase();
+        }
+
+        function crestHtml(team, size = '') {
+            const logo = team?.logo;
+            return `<span class="crest${size ? ' ' + size : ''}${logo ? '' : ' noimg'}" data-initials="${escapeHtml(initials(team?.name))}">${
+                logo ? `<img src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''
+            }</span>`;
+        }
+
+        // Se un'immagine non si carica (o è vuota) il cerchio mostra le iniziali della squadra.
+        document.addEventListener('error', event => {
+            const el = event.target;
+            if (el && el.tagName === 'IMG') el.closest('.crest')?.classList.add('noimg');
+        }, true);
+        document.addEventListener('load', event => {
+            const el = event.target;
+            if (el && el.tagName === 'IMG' && el.naturalWidth < 2) el.closest('.crest')?.classList.add('noimg');
+        }, true);
+
+        function starHtml(team, fav) {
+            const label = fav ? `Rimuovi ${team.name} dalle preferite` : `Imposta ${team.name} come squadra preferita`;
+            return `<button type="button" class="star" data-key="${escapeHtml(teamKey(team))}" data-name="${escapeHtml(team.name)}" aria-pressed="${fav ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><svg width="15" height="15" viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.9 6.7 19.7l1.1-5.9L3.5 9.7l5.9-.8z"/></svg></button>`;
+        }
+
+        // ---- Dati da ESPN ----
+        const num = value => {
+            const n = parseInt(value, 10);
+            return Number.isFinite(n) ? n : null;
+        };
+
+        function mapStatus(type = {}) {
+            const name = String(type.name || '').toUpperCase();
+            if (name.includes('POSTPONED')) return 'POSTPONED';
+            if (name.includes('CANCEL')) return 'CANCELLED';
+            if (name.includes('SUSPENDED') || name.includes('ABANDONED')) return 'SUSPENDED';
+            if (name.includes('HALFTIME')) return 'PAUSED';
+            if (type.state === 'in') return 'IN_PLAY';
+            if (type.state === 'post') return 'FINISHED';
+            return 'SCHEDULED';
+        }
+
+        function espnTeam(competitor) {
+            const t = competitor.team || {};
+            const id = String(t.id ?? '');
+            return {
+                id,
+                name: t.displayName || t.shortDisplayName || t.name || 'Squadra',
+                logo: t.logo || (id ? `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png` : '')
+            };
+        }
+
+        function normalizeEvent(ev, league) {
+            const comp = ev.competitions?.[0];
+            const home = comp?.competitors?.find(c => c.homeAway === 'home');
+            const away = comp?.competitors?.find(c => c.homeAway === 'away');
+            if (!home || !away || !ev.date) return null;
+            const st = ev.status || comp.status || {};
+            const status = mapStatus(st.type);
+            const started = !['SCHEDULED', 'POSTPONED', 'CANCELLED'].includes(status);
+            return {
+                id: String(ev.id),
+                utcDate: new Date(ev.date).toISOString(),
+                status,
+                clock: st.type?.state === 'in' ? (st.displayClock || '') : '',
+                competition: { code: league.code, name: league.name },
+                homeTeam: espnTeam(home),
+                awayTeam: espnTeam(away),
+                score: { fullTime: { home: started ? num(home.score) : null, away: started ? num(away.score) : null } }
+            };
+        }
+
+        const ymd = date => formatDate(date).replace(/-/g, '');
+
+        async function fetchLeague(league, from, to) {
+            const url = `${ESPN_URL}/${league.slug}/scoreboard?dates=${ymd(from)}-${ymd(to)}&limit=400`;
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`ESPN ha risposto ${response.status}`);
+            const payload = await response.json();
+            return (payload.events || []).map(ev => normalizeEvent(ev, league)).filter(Boolean);
+        }
+
+        async function fetchRange(from, to) {
+            const results = await Promise.allSettled(leagues.map(l => fetchLeague(l, from, to)));
+            const okCodes = leagues.filter((_, i) => results[i].status === 'fulfilled').map(l => l.code);
+            return {
+                matches: results.flatMap(r => (r.status === 'fulfilled' ? r.value : [])),
+                okCodes,
+                failed: leagues.length - okCodes.length
+            };
+        }
+
+        async function loadArchive() {
+            const response = await fetch(`${FALLBACK_URL}?v=${Date.now()}`, { cache: 'no-store' });
+            if (!response.ok) throw new Error('Dati non raggiungibili. Riprova tra poco.');
+            const data = await response.json();
+            store.clear();
+            (Array.isArray(data.matches) ? data.matches : []).forEach(m => store.set(String(m.id), m));
+            windowFrom = data.from || '';
+            windowTo = data.to || '';
+            source = 'archive';
+        }
+
+        async function doRefresh(mode) {
+            if (mode === 'live' && source === 'live') {
+                // Aggiornamento leggero: solo ieri-oggi-domani, unito ai dati già presenti
+                const res = await fetchRange(addDays(new Date(), -1), addDays(new Date(), 1));
+                if (!res.okCodes.length) {
+                    liveError = true;
+                    return;
+                }
+                res.matches.forEach(m => store.set(m.id, m));
+                liveError = false;
+                failedLeagues = res.failed;
+            } else {
+                const from = addDays(currentDate, -DAYS_BACK);
+                const to = addDays(currentDate, DAYS_AHEAD);
+                const res = await fetchRange(from, to);
+                if (!res.okCodes.length) {
+                    await loadArchive();
+                    failedLeagues = 0;
+                } else {
+                    // Sostituisce le competizioni scaricate, tiene quelle che hanno dato errore
+                    const keep = [...store.values()].filter(m => !res.okCodes.includes(m.competition?.code));
+                    store.clear();
+                    keep.forEach(m => store.set(m.id, m));
+                    res.matches.forEach(m => store.set(m.id, m));
+                    source = 'live';
+                    windowFrom = formatDate(from);
+                    windowTo = formatDate(to);
+                    failedLeagues = res.failed;
+                }
+                liveError = false;
+                lastFull = Date.now();
+            }
+            loaded = true;
+            lastUpdate = new Date();
+        }
+
+        async function refresh(mode) {
+            if (inflight) await inflight.catch(() => {});
+            inflight = doRefresh(mode);
+            try {
+                await inflight;
+            } finally {
+                inflight = null;
+            }
+        }
+
+        function needsFull() {
+            if (!loaded) return true;
+            if (source === 'archive') return false;
+            const day = formatDate(currentDate);
+            return day < windowFrom || formatDate(addDays(currentDate, 3)) > windowTo;
+        }
+
+        // ---- Rendering ----
+        function setHtml(key, element, html) {
+            if (lastHtml[key] === html) return;
+            lastHtml[key] = html;
+            element.innerHTML = html;
+        }
+
+        function matchesForDay(date) {
             const day = formatDate(date);
-            return data.matches.filter(m => {
+            return [...store.values()].filter(m => {
                 if (!m.utcDate || formatDate(new Date(m.utcDate)) !== day) return false;
                 return !selectedLeague || m.competition?.code === selectedLeague;
             });
         }
 
-        function byTime(a, b) {
-            return String(a.utcDate || '').localeCompare(String(b.utcDate || ''));
-        }
-
-        function loadUpcoming(data, scheduledToday) {
+        function loadUpcoming(scheduledToday) {
             let list = [...scheduledToday];
             for (let offset = 1; list.length < 6 && offset <= 3; offset++) {
-                const matches = matchesForDay(data, addDays(currentDate, offset));
-                list = list.concat(matches.filter(m => UPCOMING_STATUSES.includes(m.status)));
+                list = list.concat(matchesForDay(addDays(currentDate, offset)).filter(isUpcoming));
             }
             return list.sort(byTime).slice(0, 9);
-        }
-
-        async function load(silent = false) {
-            const id = ++requestId;
-            if (!silent) {
-                Object.keys(containers).forEach(type => {
-                    containers[type].innerHTML = '<div class="note">Caricamento…</div>';
-                    counters[type].textContent = '';
-                });
-            }
-
-            let data;
-            try {
-                data = await loadData();
-            } catch (err) {
-                if (id === requestId) renderError(err);
-                return;
-            }
-            if (id !== requestId) return;
-
-            const day = matchesForDay(data, currentDate);
-            const dayStr = formatDate(currentDate);
-            const outOfRange = !data.from || dayStr < data.from || dayStr > data.to;
-            emptyText.past = outOfRange
-                ? (data.from ? `Dati disponibili solo dal ${data.from.split('-').reverse().join('/')} al ${data.to.split('-').reverse().join('/')}.` : 'Dati in arrivo: attendi il primo aggiornamento.')
-                : 'Nessun risultato per questa data e competizione.';
-
-            const live = day.filter(m => LIVE_STATUSES.includes(m.status)).sort(byTime);
-            const scheduled = day.filter(m => UPCOMING_STATUSES.includes(m.status)).sort(byTime);
-            const past = day.filter(m => !LIVE_STATUSES.includes(m.status) && !UPCOMING_STATUSES.includes(m.status)).sort(byTime);
-
-            renderMatches(live, 'live');
-            renderMatches(past, 'past');
-
-            renderMatches(loadUpcoming(data, scheduled), 'upcoming');
-        }
-
-        function renderError(err, types = ['live', 'past', 'upcoming']) {
-            const message = err.status === 429
-                ? 'Troppe richieste. Riprova tra un minuto.'
-                : (err.message || 'Dati reali non disponibili in questo momento.');
-            const html = `<div class="note error"><strong>Dati non disponibili</strong>${escapeHtml(message)}</div>`;
-            types.forEach(type => {
-                containers[type].innerHTML = html;
-                counters[type].textContent = '';
-            });
         }
 
         function statusInfo(match) {
             switch (match.status) {
                 case 'IN_PLAY':
                 case 'LIVE':
-                    return { text: 'In diretta', live: true };
+                    return { text: match.clock ? `In diretta · ${match.clock}` : 'In diretta', live: true };
                 case 'PAUSED':
                     return { text: 'Intervallo', live: true };
                 case 'FINISHED':
@@ -621,43 +961,225 @@
             }
         }
 
-        function renderMatches(matches, type) {
-            const container = containers[type];
-            counters[type].textContent = matches.length ? String(matches.length) : '';
+        function teamRow(team, score, hasScore, lose, type) {
+            const fav = isFav(team);
+            const pts = type === 'upcoming' ? '' : `<span class="pts">${hasScore ? score : '–'}</span>`;
+            return `<div class="row${lose ? ' lose' : ''}${fav ? ' fav' : ''}"><span class="team">${crestHtml(team)}<span class="name">${escapeHtml(team.name)}</span>${starHtml(team, fav)}</span>${pts}</div>`;
+        }
 
-            if (!matches.length) {
-                container.innerHTML = `<div class="note">${emptyText[type]}</div>`;
-                return;
-            }
+        function matchesHtml(matches, type) {
+            if (!matches.length) return `<div class="note">${emptyText[type]}</div>`;
 
             const cells = matches.map(match => {
-                const home = match.homeTeam?.name || 'Squadra';
-                const away = match.awayTeam?.name || 'Squadra';
                 const sh = match.score?.fullTime?.home;
                 const sa = match.score?.fullTime?.away;
                 const hasScore = type !== 'upcoming' && sh != null && sa != null;
-                const finished = match.status === 'FINISHED' || match.status === 'AWARDED';
+                const finished = isFinished(match);
                 const status = statusInfo(match);
-                const homeLose = finished && hasScore && sh < sa ? ' lose' : '';
-                const awayLose = finished && hasScore && sa < sh ? ' lose' : '';
-                const pts = value => (type === 'upcoming' ? '' : `<span class="pts">${hasScore ? value : '–'}</span>`);
+                const home = match.homeTeam || { name: 'Squadra' };
+                const away = match.awayTeam || { name: 'Squadra' };
+                const hasFav = isFav(home) || isFav(away);
 
                 return `
-                    <article class="match">
+                    <article class="match${hasFav ? ' has-fav' : ''}">
                         <div class="match-top">
                             <span class="comp">${escapeHtml(match.competition?.name || 'Competizione')}</span>
                             <span class="status${status.live ? ' live' : ''}">${escapeHtml(status.text)}</span>
                         </div>
                         <div class="rows">
-                            <div class="row${homeLose}"><span class="name">${escapeHtml(home)}</span>${pts(sh)}</div>
-                            <div class="row${awayLose}"><span class="name">${escapeHtml(away)}</span>${pts(sa)}</div>
+                            ${teamRow(home, sh, hasScore, finished && hasScore && sh < sa, type)}
+                            ${teamRow(away, sa, hasScore, finished && hasScore && sa < sh, type)}
                         </div>
                     </article>`;
             });
 
             // Su due colonne, con numero dispari di partite, riempie la cella vuota.
             if (matches.length % 2 === 1) cells.push('<div class="filler" aria-hidden="true"></div>');
-            container.innerHTML = `<div class="matches">${cells.join('')}</div>`;
+            return `<div class="matches">${cells.join('')}</div>`;
+        }
+
+        function favCardHtml(match, label) {
+            const home = match.homeTeam;
+            const away = match.awayTeam;
+            const sh = match.score?.fullTime?.home;
+            const sa = match.score?.fullTime?.away;
+            const hasScore = sh != null && sa != null && !isUpcoming(match);
+            const status = statusInfo(match);
+            const finished = isFinished(match);
+            const d = match.utcDate ? new Date(match.utcDate) : null;
+
+            let mid;
+            if (hasScore) {
+                mid = `<div class="big">${sh} – ${sa}</div><div class="small${status.live ? ' status live' : ''}">${escapeHtml(status.text)}</div>`;
+            } else if (isUpcoming(match) && d) {
+                mid = `<div class="big">${escapeHtml(d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }))}</div><div class="small">${escapeHtml(d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }))}</div>`;
+            } else {
+                mid = `<div class="big">–</div><div class="small">${escapeHtml(status.text)}</div>`;
+            }
+
+            const side = (team, score, other) => `
+                <div class="side${isFav(team) ? ' me' : ''}${finished && hasScore && score < other ? ' lose' : ''}">
+                    ${crestHtml(team, 'lg')}
+                    <span class="sname">${escapeHtml(team.name)}</span>
+                </div>`;
+
+            return `
+                <article class="favcard">
+                    <div class="match-top">
+                        <span class="tag">${escapeHtml(label)}</span>
+                        <span class="comp">${escapeHtml(match.competition?.name || '')}</span>
+                    </div>
+                    <div class="versus">${side(home, sh, sa)}<div class="mid">${mid}</div>${side(away, sa, sh)}</div>
+                </article>`;
+        }
+
+        function renderFavorite() {
+            if (!favorite) {
+                favBar.hidden = true;
+                favHint.hidden = false;
+                favSection.hidden = true;
+                lastHtml.favBar = lastHtml.fav = null;
+                return;
+            }
+
+            const team = favoriteTeam();
+            favHint.hidden = true;
+            favBar.hidden = false;
+            setHtml('favBar', favBar, `${crestHtml(team, 'sm')}<span><span class="label">Squadra preferita:</span> <span class="fname">${escapeHtml(team.name)}</span></span><button type="button" id="favClear">Rimuovi</button>`);
+
+            const mine = [...store.values()].filter(m => isFav(m.homeTeam) || isFav(m.awayTeam)).sort(byTime);
+            const live = mine.find(isLive);
+            const next = mine.find(isUpcoming);
+            const last = [...mine].reverse().find(isFinished);
+
+            const cards = [];
+            if (live) cards.push(favCardHtml(live, 'In diretta'));
+            else if (last) cards.push(favCardHtml(last, 'Ultimo risultato'));
+            if (next) cards.push(favCardHtml(next, 'Prossima partita'));
+
+            favSection.hidden = false;
+            setHtml('fav', favContainer, cards.length
+                ? `<div class="favcards">${cards.join('')}</div>`
+                : `<div class="note">Nessuna partita di ${escapeHtml(team.name)} nelle competizioni seguite, nei prossimi giorni.</div>`);
+        }
+
+        function renderUpdated() {
+            let text;
+            if (!lastUpdate) text = 'aggiornamento in corso…';
+            else if (source === 'archive') text = 'dati live non raggiungibili, mostro l\'ultimo salvataggio';
+            else {
+                const time = lastUpdate.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+                text = `aggiornato alle ${time}`;
+                if (liveError) text += ' · connessione persa, riprovo';
+                else if (failedLeagues) text += ` · ${failedLeagues} competizioni non disponibili`;
+            }
+            updatedEl.textContent = text;
+        }
+
+        function render() {
+            const dayStr = formatDate(currentDate);
+            const outOfRange = source === 'archive' && (!windowFrom || dayStr < windowFrom || dayStr > windowTo);
+            emptyText.past = outOfRange
+                ? (windowFrom ? `Dati disponibili solo dal ${windowFrom.split('-').reverse().join('/')} al ${windowTo.split('-').reverse().join('/')}.` : 'Dati in arrivo: attendi il primo aggiornamento.')
+                : 'Nessun risultato per questa data e competizione.';
+
+            const day = matchesForDay(currentDate);
+            const viewingToday = dayStr === formatDate(new Date());
+
+            // Oggi si mostrano tutte le partite in corso, anche quelle iniziate prima di mezzanotte
+            const live = (viewingToday
+                ? [...store.values()].filter(m => isLive(m) && (!selectedLeague || m.competition?.code === selectedLeague))
+                : day.filter(isLive)).sort(byTime);
+            const scheduled = day.filter(isUpcoming).sort(byTime);
+            const past = day.filter(m => !isLive(m) && !isUpcoming(m)).sort(byTime);
+            const upcoming = loadUpcoming(scheduled);
+
+            const lists = { live, past, upcoming };
+            Object.keys(lists).forEach(type => {
+                counters[type].textContent = lists[type].length ? String(lists[type].length) : '';
+                setHtml(type, containers[type], matchesHtml(lists[type], type));
+            });
+
+            renderFavorite();
+            renderUpdated();
+        }
+
+        function renderError(err) {
+            const html = `<div class="note error"><strong>Dati non disponibili</strong>${escapeHtml(err.message || 'Dati reali non disponibili in questo momento.')}</div>`;
+            Object.keys(containers).forEach(type => {
+                lastHtml[type] = null;
+                containers[type].innerHTML = html;
+                counters[type].textContent = '';
+            });
+        }
+
+        function renderLeagueFilters() {
+            const container = document.getElementById('leagueFilterContainer');
+            container.innerHTML = '';
+            [{ code: '', name: 'Tutte' }, ...leagues].forEach(league => {
+                const btn = document.createElement('button');
+                btn.className = 'chip';
+                btn.type = 'button';
+                btn.textContent = league.name;
+                if ((selectedLeague || '') === league.code) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedLeague = league.code || null;
+                    render();
+                });
+                container.appendChild(btn);
+            });
+        }
+
+        // ---- Caricamento e aggiornamento ----
+        async function load() {
+            const id = ++requestId;
+            if (needsFull()) {
+                Object.keys(containers).forEach(type => {
+                    lastHtml[type] = null;
+                    containers[type].innerHTML = '<div class="note">Caricamento…</div>';
+                    counters[type].textContent = '';
+                });
+                try {
+                    await refresh('full');
+                } catch (err) {
+                    if (id === requestId) renderError(err);
+                    return;
+                }
+                if (id !== requestId) return;
+            }
+            render();
+        }
+
+        function needsFastPolling() {
+            const now = Date.now();
+            for (const m of store.values()) {
+                if (isLive(m)) return true;
+                if (isUpcoming(m)) {
+                    const t = new Date(m.utcDate).getTime();
+                    if (t - now < 20 * 60000 && now - t < 3 * 3600000) return true;
+                }
+            }
+            return false;
+        }
+
+        async function tick() {
+            const full = source === 'archive' || Date.now() - lastFull > FULL_REFRESH_MS;
+            try {
+                await refresh(full ? 'full' : 'live');
+            } catch (err) {
+                liveError = true;
+            }
+            render();
+        }
+
+        function scheduleTick() {
+            clearTimeout(tickTimer);
+            tickTimer = setTimeout(async () => {
+                if (!document.hidden) await tick();
+                scheduleTick();
+            }, needsFastPolling() ? LIVE_REFRESH_MS : IDLE_REFRESH_MS);
         }
 
         function changeDate(delta) {
@@ -675,15 +1197,30 @@
         function init() {
             renderLeagueFilters();
             updateDateUI();
-            load();
-
-            setInterval(() => {
-                if (!document.hidden && formatDate(currentDate) === formatDate(new Date())) load(true);
-            }, REFRESH_MS);
+            load().then(scheduleTick);
 
             document.getElementById('prevDayBtn').addEventListener('click', () => changeDate(-1));
             document.getElementById('nextDayBtn').addEventListener('click', () => changeDate(1));
             document.getElementById('todayBtn').addEventListener('click', goToday);
+
+            document.addEventListener('click', event => {
+                const star = event.target.closest('.star');
+                if (star) {
+                    toggleFavorite(star.dataset.key, star.dataset.name);
+                    return;
+                }
+                if (event.target.closest('#favClear')) {
+                    favorite = null;
+                    saveFavorite();
+                    render();
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && loaded && (!lastUpdate || Date.now() - lastUpdate.getTime() > 30000)) {
+                    tick().then(scheduleTick);
+                }
+            });
         }
 
         init();

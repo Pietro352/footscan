@@ -827,36 +827,68 @@
 
         const ymd = date => formatDate(date).replace(/-/g, '');
 
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
         async function fetchLeague(league, date) {
+            // ESPN non accetta intervalli di date (dates=DA-A risponde 400): una richiesta per giorno.
             const url = `${ESPN_URL}/${league.slug}/scoreboard?dates=${ymd(date)}&limit=400`;
-            const response = await fetch(url, { cache: 'no-store' });
-            if (!response.ok) throw new Error(`ESPN ha risposto ${response.status}`);
-            const payload = await response.json();
-            return (payload.events || []).map(ev => normalizeEvent(ev, league)).filter(Boolean);
+            let lastError;
+            for (let attempt = 0; attempt < 3; attempt++) {
+                try {
+                    const response = await fetch(url, { cache: 'no-store' });
+                    if (!response.ok) throw new Error(`ESPN ha risposto ${response.status}`);
+                    const payload = await response.json();
+                    return (payload.events || []).map(ev => normalizeEvent(ev, league)).filter(Boolean);
+                } catch (err) {
+                    lastError = err;
+                    await sleep(400 * (attempt + 1));
+                }
+            }
+            throw lastError;
+        }
+
+        // Esegue i job con al massimo `limit` richieste contemporanee, per non farsi bloccare da ESPN.
+        async function runPool(jobs, limit) {
+            const results = new Array(jobs.length);
+            let next = 0;
+            const workers = Array.from({ length: Math.min(limit, jobs.length) }, async () => {
+                while (next < jobs.length) {
+                    const i = next++;
+                    try {
+                        results[i] = { ok: true, value: await jobs[i]() };
+                    } catch (err) {
+                        results[i] = { ok: false, error: err };
+                    }
+                }
+            });
+            await Promise.all(workers);
+            return results;
         }
 
         async function fetchRange(from, to) {
-            // ESPN no longer supports date ranges — fetch one day at a time
             const dates = [];
-            for (let d = new Date(from); d <= to; d = addDays(d, 1)) {
-                dates.push(new Date(d));
-            }
-            // One promise per league: each fetches all days in parallel
-            const tasks = [];
-            const taskLeagues = [];
+            for (let d = new Date(from); d <= to; d = addDays(d, 1)) dates.push(new Date(d));
+            const jobs = [];
+            const owners = [];
             for (const league of leagues) {
-                const leaguePromise = Promise.all(dates.map(date => fetchLeague(league, date)))
-                    .then(arrays => arrays.flat());
-                tasks.push(leaguePromise);
-                taskLeagues.push(league);
+                for (const date of dates) {
+                    jobs.push(() => fetchLeague(league, date));
+                    owners.push(league.code);
+                }
             }
-            const results = await Promise.allSettled(tasks);
-            const okCodes = taskLeagues.filter((_, i) => results[i].status === 'fulfilled').map(l => l.code);
-            return {
-                matches: results.flatMap(r => (r.status === 'fulfilled' ? r.value : [])),
-                okCodes,
-                failed: leagues.length - okCodes.length
-            };
+            const results = await runPool(jobs, 6);
+            // Una competizione conta come scaricata solo se tutti i suoi giorni sono arrivati,
+            // così non si sostituiscono dati completi con dati parziali.
+            const matches = [];
+            const okCodes = [];
+            for (const league of leagues) {
+                const mine = results.filter((_, i) => owners[i] === league.code);
+                if (mine.every(r => r.ok)) {
+                    okCodes.push(league.code);
+                    mine.forEach(r => matches.push(...r.value));
+                }
+            }
+            return { matches, okCodes, failed: leagues.length - okCodes.length };
         }
 
         async function loadArchive() {

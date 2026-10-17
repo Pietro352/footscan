@@ -90,13 +90,23 @@ for (let d = -DAYS_BACK; d <= DAYS_AHEAD; d++) dates.push(ymd(d));
 
 for (const league of LEAGUES) {
   try {
-    const dayResults = await Promise.all(dates.map(async (date) => {
+    const dayResults = [];
+    for (const date of dates) {
       const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league.slug}/scoreboard?dates=${date}&limit=400`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const payload = await res.json();
-      return payload.events || [];
-    }));
+      let events, lastError;
+      for (let attempt = 0; attempt < 3 && !events; attempt++) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          events = (await res.json()).events || [];
+        } catch (err) {
+          lastError = err;
+          await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
+        }
+      }
+      if (!events) throw lastError;
+      dayResults.push(events);
+    }
     for (const events of dayResults) {
       for (const ev of events) {
         const m = normalize(ev, league);

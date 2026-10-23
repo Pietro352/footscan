@@ -1,4 +1,4 @@
-// Scarica le partite da ESPN (API pubblica, senza chiave) e le salva in data/matches.json.
+// Scarica le partite (con marcatori e cartellini rossi) da ESPN (API pubblica, senza chiave) e le salva in data/matches.json.
 // Il sito legge i dati live direttamente dal browser: questo file è solo il "piano B"
 // che si usa se ESPN non fosse raggiungibile dal browser.
 import { writeFile, readFile } from 'node:fs/promises';
@@ -57,6 +57,29 @@ function team(c) {
   };
 }
 
+// Cognome del giocatore ("G. Ramos" -> "Ramos")
+function playerName(athlete) {
+  const short = String(athlete?.shortName || '').replace(/^(?:\p{L}\.\s*)+/u, '').trim();
+  return short || athlete?.displayName || '';
+}
+
+const fixMin = s => String(s || '').replace(/'\+/g, '+');
+
+// Gol e cartellini rossi (gli stessi che il sito legge dal vivo da ESPN).
+// Per i gol, "tid" è la squadra a cui va il gol (negli autogol è quella avvantaggiata).
+function events(comp) {
+  const out = [];
+  for (const d of comp?.details || []) {
+    if (d.shootout) continue;
+    const tid = String(d.team?.id ?? '');
+    const n = playerName(d.athletesInvolved?.[0]);
+    const m = fixMin(d.clock?.displayValue);
+    if (d.scoringPlay) out.push({ k: d.ownGoal ? 'o' : d.penaltyKick ? 'p' : 'g', tid, n, m });
+    else if (d.redCard) out.push({ k: 'r', tid, n, m });
+  }
+  return out;
+}
+
 function normalize(ev, league) {
   const comp = ev.competitions?.[0];
   const home = comp?.competitors?.find(c => c.homeAway === 'home');
@@ -70,10 +93,17 @@ function normalize(ev, league) {
     utcDate: new Date(ev.date).toISOString(),
     status,
     clock: st.type?.state === 'in' ? (st.displayClock || '') : '',
-    competition: { code: league.code, name: league.name },
+    detail: status === 'FINISHED' ? String(st.type?.shortDetail || '') : '',
+    competition: { code: league.code, name: league.name, slug: league.slug },
     homeTeam: team(home),
     awayTeam: team(away),
-    score: { fullTime: { home: started ? num(home.score) : null, away: started ? num(away.score) : null } }
+    score: {
+      fullTime: { home: started ? num(home.score) : null, away: started ? num(away.score) : null },
+      penalties: num(home.shootoutScore) != null && num(away.shootoutScore) != null
+        ? { home: num(home.shootoutScore), away: num(away.shootoutScore) }
+        : null
+    },
+    events: started ? events(comp) : []
   };
 }
 

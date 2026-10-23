@@ -1,5 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Footscan">
-  <rect width="64" height="64" rx="16" fill="#111214"/>
-  <circle cx="32" cy="32" r="16" fill="none" stroke="#ececea" stroke-width="4"/>
-  <path d="M32 24.5l7.1 5.2-2.7 8.3h-8.8l-2.7-8.3z" fill="#e9b35f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Football Icon">
+  <!-- Sfondo arrotondato -->
+  <rect width="64" height="64" rx="16" fill="#111214" />
+  
+  <!-- Cerchio esterno -->
+  <circle cx="32" cy="32" r="18" fill="none" stroke="#ececea" stroke-width="3.5" />
+
+  <!-- Struttura geometrica del pallone -->
+  <g stroke="#ececea" stroke-width="2.5" stroke-linecap="butt" stroke-linejoin="miter" fill="none">
+    <!-- Raggi che partono dal centro esatto e finiscono sotto il pentagono -->
+    <line x1="32" y1="32" x2="32" y2="14" />
+    <line x1="32" y1="32" x2="49.1" y2="26.4" />
+    <line x1="32" y1="32" x2="42.6" y2="46.6" />
+    <line x1="32" y1="32" x2="21.4" y2="46.6" />
+    <line x1="32" y1="32" x2="14.9" y2="26.4" />
+
+    <!-- Anello poligonale esterno per chiudere la trama del pallone -->
+    <path d="M 32 14 L 42.6 17.4 L 49.1 26.4 L 49.1 37.6 L 42.6 46.6 L 32 50 L 21.4 46.6 L 14.9 37.6 L 14.9 26.4 L 21.4 17.4 Z" />
+  </g>
+
+  <!-- Pentagono centrale in oro (copre totalmente il centro nascondendo i capi delle linee) -->
+  <path d="M32 24.5l7.1 5.2-2.7 8.3h-8.8l-2.7-8.3z" fill="#e9b35f" />
 </svg>

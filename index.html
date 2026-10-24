@@ -219,23 +219,66 @@
             background: var(--surface);
             border: 1px solid var(--line);
             border-radius: 14px;
-            padding: 16px 14px 12px;
+            padding: 16px 14px 14px;
             box-shadow: 0 24px 60px var(--shadow);
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .theme-menu[hidden] { display: none; }
 
         .theme-menu h2 {
-            grid-column: 1 / -1;
             font-size: 0.78rem;
             font-weight: 500;
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            margin-bottom: 2px;
+            margin-bottom: 10px;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px 6px;
+        }
+
+        /* Impostazioni: squadra preferita */
+        .set-fav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .set-fav .fname {
+            min-width: 0;
+            font-weight: 600;
+            color: var(--accent);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .set-fav button {
+            margin-left: auto;
+            flex-shrink: 0;
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: var(--muted);
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .set-fav button:hover { color: var(--text); border-color: var(--muted); }
+
+        .set-empty {
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.45;
         }
 
         .theme-opt {
@@ -1264,6 +1307,142 @@
         .evcell .card { margin: 0; }
         .pl .mk .card { margin: 0; }
 
+        /* ---- Selettore competizioni con frecce ---- */
+        .chipbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .chipbar .chips {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+            padding-bottom: 0;
+        }
+
+        .chipnav {
+            flex-shrink: 0;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            background: none;
+            border: 1px solid var(--line);
+            border-radius: 50%;
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .chipnav svg { width: 16px; height: 16px; }
+        .chipnav:hover:not(:disabled) { background: var(--surface); border-color: var(--muted); }
+        .chipnav:disabled { opacity: 0.28; cursor: default; }
+        .chipbar.noscroll .chipnav { display: none; }
+
+        /* ---- Vista Partite / Classifica ---- */
+        body[data-mode="standings"] .dayhead,
+        body[data-mode="standings"] .days,
+        body[data-mode="standings"] #statusSeg,
+        body[data-mode="standings"] #favSection,
+        body[data-mode="standings"] #favHint { display: none; }
+
+        /* ---- Classifica ---- */
+        .stgroup + .stgroup { margin-top: 26px; }
+
+        .stbl-wrap {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--bg);
+            overflow-x: auto;
+        }
+
+        .stbl {
+            width: 100%;
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stbl th {
+            padding: 12px 8px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--muted);
+            text-align: center;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .stbl td {
+            padding: 8px;
+            text-align: center;
+            font-size: 0.92rem;
+            color: var(--muted);
+            border-top: 1px solid var(--line);
+        }
+
+        .stbl tbody tr:first-child td { border-top: 0; }
+
+        .stbl .c-pos {
+            width: 58px;
+            padding-left: 14px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .stbl td.c-pos { color: var(--text); font-weight: 600; }
+
+        .stbl .c-team {
+            width: 100%;
+            max-width: 0;
+            text-align: left;
+        }
+
+        .stbl .name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .stbl td.c-pts { color: var(--text); font-weight: 700; }
+
+        .stbl .zone {
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            margin-right: 8px;
+            border-radius: 2px;
+            vertical-align: middle;
+            background: transparent;
+        }
+
+        .srow:hover td { background: var(--surface); }
+        .srow.fav td { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+        .srow.fav td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+        @media (hover: hover) {
+            .srow:hover .star:not([aria-pressed="true"]) { opacity: 0.8; }
+        }
+
+        .stlegend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 18px;
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .stlegend span { display: inline-flex; align-items: center; gap: 7px; }
+        .stlegend i { width: 10px; height: 10px; border-radius: 3px; }
+
         /* ---- Telefono ---- */
         @media (max-width: 680px) {
             .tagline { display: none; }
@@ -1277,6 +1456,10 @@
             .seg button { flex: 1; justify-content: center; padding: 0 6px; font-size: 0.85rem; gap: 5px; }
             #selected-date { font-size: 1.05rem; }
             .hint-tap { display: none; }
+            .stbl .c-gf, .stbl .c-gs { display: none; }
+            .stbl th, .stbl td { padding-left: 5px; padding-right: 5px; }
+            .stbl .c-pos { width: 48px; padding-left: 10px; }
+            .stbl .team { gap: 8px; }
 
             dialog.sheet {
                 width: 100vw;
@@ -1312,6 +1495,7 @@
             <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
             <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.8 0-.9-.6-1.3-.6-2.2 0-1 .8-1.7 1.8-1.7H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7.5" r="1.2" fill="currentColor"/><circle cx="15" cy="7.8" r="1.2" fill="currentColor"/></symbol>
             <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 10h17M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+            <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
             <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
             <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
             <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></symbol>
@@ -1328,7 +1512,7 @@
                 <span class="tagline">Risultati, marcatori e dettagli delle partite</span>
             </div>
             <div class="theme-wrap">
-                <button type="button" class="iconbtn" id="themeBtn" aria-haspopup="true" aria-expanded="false" aria-label="Cambia tema" title="Cambia tema"><svg><use href="#i-palette"/></svg></button>
+                <button type="button" class="iconbtn" id="themeBtn" aria-haspopup="true" aria-expanded="false" aria-label="Impostazioni" title="Impostazioni"><svg><use href="#i-gear"/></svg></button>
                 <div class="theme-menu" id="themeMenu" hidden></div>
             </div>
         </div>
@@ -1337,6 +1521,7 @@
     <div class="wrap">
         <main>
             <div class="controls">
+                <div class="seg viewseg" id="viewSeg" role="group" aria-label="Vista"></div>
                 <div class="dayhead">
                     <span id="selected-date" aria-live="polite"></span>
                     <div class="dayactions">
@@ -1353,8 +1538,11 @@
                     <button type="button" class="iconbtn daynav" id="nextDayBtn" aria-label="Giorno successivo"><svg><use href="#i-right"/></svg></button>
                 </div>
                 <div class="seg" id="statusSeg" role="group" aria-label="Filtra per stato"></div>
-                <div class="chips" id="leagueFilterContainer" role="group" aria-label="Competizioni"></div>
-                <div class="favbar" id="favBar" hidden></div>
+                <div class="chipbar" id="chipBar">
+                    <button type="button" class="chipnav" id="chipPrev" aria-label="Competizioni precedenti" title="Indietro" disabled><svg><use href="#i-left"/></svg></button>
+                    <div class="chips" id="leagueFilterContainer" role="group" aria-label="Competizioni"></div>
+                    <button type="button" class="chipnav" id="chipNext" aria-label="Altre competizioni" title="Avanti"><svg><use href="#i-right"/></svg></button>
+                </div>
                 <p class="favhint" id="favHint">Tocca la stella accanto a una squadra per sceglierla come preferita. Tocca una partita per vedere marcatori, statistiche e video.</p>
             </div>
 
@@ -1385,6 +1573,7 @@
         // I dati live arrivano da ESPN (API pubblica, senza chiave) direttamente dal browser.
         // Se ESPN non fosse raggiungibile si ripiega su data/matches.json (aggiornato da GitHub Actions).
         const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/soccer';
+        const ESPN_STANDINGS_URL = 'https://site.api.espn.com/apis/v2/sports/soccer'; // classifiche
         const FALLBACK_URL = 'data/matches.json';
         const FAV_KEY = 'footscan:favorite';
         const THEME_KEY = 'footscan:theme';
@@ -1432,7 +1621,6 @@
         const listContainer = $('listContainer');
         const statusSeg = $('statusSeg');
         const dayStrip = $('dayStrip');
-        const favBar = $('favBar');
         const favHint = $('favHint');
         const favSection = $('favSection');
         const favContainer = $('favContainer');
@@ -1457,6 +1645,7 @@
         let currentDate = new Date();
         let selectedLeague = null;
         let statusFilter = 'all';         // all | live | results | upcoming
+        let view = 'matches';             // matches | standings (Partite o Classifica)
         let requestId = 0;
         let inflight = null;
         let tickTimer = null;
@@ -1548,12 +1737,12 @@
             return findTeam(favorite.key) || { id: favorite.key, name: favorite.name, logo: favorite.logo };
         }
 
-        function toggleFavorite(key, name) {
+        function toggleFavorite(key, name, logo = '') {
             if (favorite && (favorite.key === key || favorite.name === name)) {
                 favorite = null;
             } else {
                 const team = findTeam(key);
-                favorite = { key, name: team?.name || name, logo: team?.logo || '' };
+                favorite = { key, name: team?.name || name, logo: team?.logo || logo || '' };
             }
             saveFavorite();
             render();
@@ -1588,7 +1777,7 @@
 
         function starHtml(team, fav) {
             const label = fav ? `Rimuovi ${team.name} dalle preferite` : `Imposta ${team.name} come squadra preferita`;
-            return `<button type="button" class="star" data-key="${escapeHtml(teamKey(team))}" data-name="${escapeHtml(team.name)}" aria-pressed="${fav ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><svg width="15" height="15" viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.9 6.7 19.7l1.1-5.9L3.5 9.7l5.9-.8z"/></svg></button>`;
+            return `<button type="button" class="star" data-key="${escapeHtml(teamKey(team))}" data-name="${escapeHtml(team.name)}" data-logo="${escapeHtml(team.logo || '')}" aria-pressed="${fav ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}"><svg width="15" height="15" viewBox="0 0 24 24" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.9 6.7 19.7l1.1-5.9L3.5 9.7l5.9-.8z"/></svg></button>`;
         }
 
         // ---- Dati da ESPN ----
@@ -2005,17 +2194,14 @@
 
         function renderFavorite() {
             if (!favorite) {
-                favBar.hidden = true;
                 favHint.hidden = false;
                 favSection.hidden = true;
-                lastHtml.favBar = lastHtml.fav = null;
+                lastHtml.fav = null;
                 return;
             }
 
             const team = favoriteTeam();
             favHint.hidden = true;
-            favBar.hidden = false;
-            setHtml('favBar', favBar, `${crestHtml(team, 'sm')}<span><span class="label">Squadra preferita:</span> <span class="fname">${escapeHtml(team.name)}</span></span><button type="button" id="favClear">Rimuovi</button>`);
 
             const mine = [...store.values()].filter(m => isFav(m.homeTeam) || isFav(m.awayTeam)).sort(byTime);
             const live = mine.find(isLive);
@@ -2074,9 +2260,12 @@
 
             const counts = { all: live.length + rest.length, live: live.length, results: results.length, upcoming: upcoming.length };
             renderStatusSeg(counts);
+            renderViewSeg();
 
             let html;
-            if (outOfRange) {
+            if (view === 'standings') {
+                html = standingsViewHtml();
+            } else if (outOfRange) {
                 html = `<section class="section"><div class="note">${windowFrom
                     ? `Dati disponibili solo dal ${windowFrom.split('-').reverse().join('/')} al ${windowTo.split('-').reverse().join('/')}.`
                     : 'Dati in arrivo: attendi il primo aggiornamento.'}</div></section>`;
@@ -2094,6 +2283,7 @@
             setHtml('list', listContainer, html);
 
             renderFavorite();
+            renderSettingsMenu();
             renderUpdated();
             if (dlg.open) renderDialog();
         }
@@ -2116,10 +2306,176 @@
                     container.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     selectedLeague = league.code || null;
+                    if (view === 'standings' && selectedLeague) loadStandings(selectedLeague);
+                    scrollActiveChip(true);
                     render();
                 });
                 container.appendChild(btn);
             });
+            scrollActiveChip(false);
+            updateChipNav();
+        }
+
+        // ---- Frecce del selettore competizioni ----
+        function updateChipNav() {
+            const chips = $('leagueFilterContainer');
+            const max = chips.scrollWidth - chips.clientWidth;
+            $('chipBar').classList.toggle('noscroll', max <= 2);
+            $('chipPrev').disabled = chips.scrollLeft <= 2;
+            $('chipNext').disabled = chips.scrollLeft >= max - 2;
+        }
+
+        function scrollActiveChip(smooth) {
+            const chips = $('leagueFilterContainer');
+            const active = chips.querySelector('.chip.active');
+            if (!active) return;
+            chips.scrollTo({
+                left: Math.max(0, active.offsetLeft - (chips.clientWidth - active.offsetWidth) / 2),
+                behavior: smooth ? 'smooth' : 'auto'
+            });
+        }
+
+        function setupChipNav() {
+            const chips = $('leagueFilterContainer');
+            const step = dir => chips.scrollBy({ left: dir * Math.max(160, chips.clientWidth * 0.75), behavior: 'smooth' });
+            $('chipPrev').addEventListener('click', () => step(-1));
+            $('chipNext').addEventListener('click', () => step(1));
+            chips.addEventListener('scroll', updateChipNav, { passive: true });
+            addEventListener('resize', updateChipNav);
+            if (window.ResizeObserver) new ResizeObserver(updateChipNav).observe(chips);
+            document.fonts?.ready.then(updateChipNav);
+            updateChipNav();
+        }
+
+        // ---- Classifiche (ESPN) ----
+        const standings = new Map();      // slug -> { groups, ts, error, loading }
+
+        const ZONE_IT = {
+            'Champions League': 'Champions League',
+            'Champions League qualifying': 'Qualificazione Champions League',
+            'Europa League': 'Europa League',
+            'Europa League qualifying': 'Qualificazione Europa League',
+            'Conference League qualifying': 'Qualificazione Conference League',
+            'Relegation': 'Retrocessione',
+            'Relegated': 'Retrocessione',
+            'Relegation playoff': 'Spareggio retrocessione',
+            'Relegation playoffs': 'Spareggi retrocessione',
+            'Promotion': 'Promozione',
+            'Promotion playoffs': 'Playoff promozione',
+            'Promotion Playoffs': 'Playoff promozione',
+            'Advance to Round of 32': 'Passa ai sedicesimi',
+            'Best 8 advance': 'Passa tra le migliori 8',
+            'Qualifies for round of 16': 'Qualificata agli ottavi',
+            'Four best 3rd placed nations qualify for round of 16': 'Le 4 migliori terze passano agli ottavi',
+            'Knockout phase playoffs - seeded': 'Playoff (teste di serie)',
+            'Knockout phase playoffs - unseeded': 'Playoff (non teste di serie)',
+            'Eliminated': 'Eliminata'
+        };
+        const zoneLabel = text => ZONE_IT[text] || text;
+
+        function statValue(entry, name) {
+            const s = (entry.stats || []).find(x => x.name === name);
+            return s && Number.isFinite(s.value) ? s.value : null;
+        }
+
+        function parseStandings(json) {
+            const children = json?.children?.length ? json.children : (json?.standings ? [json] : []);
+            return children.map(child => {
+                const entries = child.standings?.entries || [];
+                const rows = entries.map((e, i) => {
+                    const t = e.team || {};
+                    const id = String(t.id ?? '');
+                    return {
+                        rank: statValue(e, 'rank') ?? i + 1,
+                        team: {
+                            id,
+                            name: t.displayName || t.shortDisplayName || t.name || 'Squadra',
+                            logo: t.logos?.[0]?.href || (id ? `https://a.espncdn.com/i/teamlogos/soccer/500/${id}.png` : '')
+                        },
+                        pts: statValue(e, 'points'),
+                        played: statValue(e, 'gamesPlayed'),
+                        wins: statValue(e, 'wins'),
+                        draws: statValue(e, 'ties'),
+                        losses: statValue(e, 'losses'),
+                        gf: statValue(e, 'pointsFor'),
+                        ga: statValue(e, 'pointsAgainst'),
+                        gd: statValue(e, 'pointDifferential'),
+                        color: /^#[0-9a-f]{3,8}$/i.test(e.note?.color || '') ? e.note.color : '',
+                        zone: e.note?.description || ''
+                    };
+                }).sort((a, b) => a.rank - b.rank);
+                return {
+                    name: String(child.name || ''),
+                    season: String(child.standings?.seasonDisplayName || ''),
+                    rows
+                };
+            }).filter(g => g.rows.length);
+        }
+
+        async function loadStandings(code, force = false) {
+            const league = leagues.find(l => l.code === code);
+            if (!league) return;
+            const cur = standings.get(league.slug) || {};
+            if (cur.loading) return;
+            if (!force && cur.groups && Date.now() - cur.ts < 120000) return;
+            standings.set(league.slug, { ...cur, loading: true });
+            try {
+                const res = await fetch(`${ESPN_STANDINGS_URL}/${league.slug}/standings`, { cache: 'no-store' });
+                if (!res.ok) throw new Error(`Errore ${res.status}`);
+                standings.set(league.slug, { groups: parseStandings(await res.json()), ts: Date.now(), error: null });
+            } catch (err) {
+                standings.set(league.slug, { groups: cur.groups, ts: cur.ts || 0, error: err.message || 'Errore di rete' });
+            }
+            if (view === 'standings') render();
+        }
+
+        function renderViewSeg() {
+            setHtml('viewseg', $('viewSeg'), [['matches', 'Partite'], ['standings', 'Classifica']].map(([id, label]) =>
+                `<button type="button" data-view="${id}" aria-pressed="${view === id ? 'true' : 'false'}">${label}</button>`
+            ).join(''));
+        }
+
+        function standingsGroupHtml(group, title) {
+            const cell = v => v == null ? '–' : v;
+            const body = group.rows.map(r => {
+                const fav = isFav(r.team);
+                const gd = r.gd == null ? '–' : (r.gd > 0 ? '+' + r.gd : r.gd);
+                const zoneTip = r.zone ? ` title="${escapeHtml(zoneLabel(r.zone))}"` : '';
+                return `<tr class="srow${fav ? ' fav' : ''}"><td class="c-pos"><span class="zone" style="background:${r.color || 'transparent'}"${zoneTip}></span>${r.rank}</td><td class="c-team"><span class="team">${crestHtml(r.team)}<span class="name">${escapeHtml(r.team.name)}</span>${starHtml(r.team, fav)}</span></td><td class="c-pts">${cell(r.pts)}</td><td>${cell(r.played)}</td><td>${cell(r.wins)}</td><td>${cell(r.draws)}</td><td>${cell(r.losses)}</td><td class="c-gf">${cell(r.gf)}</td><td class="c-gs">${cell(r.ga)}</td><td>${gd}</td></tr>`;
+            }).join('');
+            const head = '<tr><th class="c-pos">#</th><th class="c-team">Squadra</th><th class="c-pts" title="Punti">Pt</th><th title="Giocate">G</th><th title="Vinte">V</th><th title="Pareggiate">N</th><th title="Perse">P</th><th class="c-gf" title="Gol fatti">GF</th><th class="c-gs" title="Gol subiti">GS</th><th title="Differenza reti">DR</th></tr>';
+            return `<div class="stgroup">${title ? `<div class="group-head"><h2>${escapeHtml(title)}</h2></div>` : ''}<div class="stbl-wrap"><table class="stbl"><thead>${head}</thead><tbody>${body}</tbody></table></div></div>`;
+        }
+
+        function standingsViewHtml() {
+            if (!selectedLeague) {
+                const picks = leagues.map(l => `<button type="button" data-pick="${escapeHtml(l.code)}">${escapeHtml(l.name)}</button>`).join('');
+                return `<section class="section"><div class="note"><strong>Scegli una competizione</strong>Seleziona un torneo qui sopra per vedere la classifica.<div class="jump">${picks}</div></div></section>`;
+            }
+            const league = leagues.find(l => l.code === selectedLeague);
+            const st = standings.get(league.slug);
+            if (!st || (st.loading && !st.groups)) {
+                return '<section class="section"><div class="note">Caricamento classifica…</div></section>';
+            }
+            if (!st.groups) {
+                return `<section class="section"><div class="note error"><strong>Classifica non disponibile</strong>${escapeHtml(st.error || 'Riprova tra poco.')}<br><button type="button" class="retry" data-st-retry>Riprova</button></div></section>`;
+            }
+            if (!st.groups.length) {
+                return `<section class="section"><div class="note"><strong>Nessuna classifica</strong>Per ${escapeHtml(league.name)} non c’è ancora una classifica in questo momento.</div></section>`;
+            }
+
+            const season = (st.groups[0].season.match(/\d{4}(?:[-/]\d{2,4})?/) || [''])[0];
+            const several = st.groups.length > 1;
+            const groupTitle = g => g.name.replace(/^Group\s+/i, 'Girone ');
+            const zones = new Map();
+            st.groups.forEach(g => g.rows.forEach(r => { if (r.zone && r.color && !zones.has(r.zone)) zones.set(r.zone, r.color); }));
+            const legend = zones.size
+                ? `<div class="stlegend">${[...zones].map(([zone, color]) => `<span><i style="background:${color}"></i>${escapeHtml(zoneLabel(zone))}</span>`).join('')}</div>`
+                : '';
+
+            return `<section class="section"><div class="section-head"><h2>${escapeHtml(league.name)}</h2>${season ? `<span class="count">${escapeHtml(season)}</span>` : ''}</div>${
+                st.groups.map(g => standingsGroupHtml(g, several ? groupTitle(g) : '')).join('')
+            }${legend}</section>`;
         }
 
         // ---- Barra dei giorni ----
@@ -2605,10 +2961,18 @@
             return pref === 'auto' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'day' : 'night') : pref;
         }
 
-        function renderThemeMenu() {
-            $('themeMenu').innerHTML = '<h2>Tema</h2>' + THEMES.map(t =>
+        function renderSettingsMenu() {
+            const themes = THEMES.map(t =>
                 `<button type="button" class="theme-opt" data-theme-id="${t.id}" aria-pressed="${t.id === themePref ? 'true' : 'false'}"><span class="sw" style="background:${t.swatch}"><i style="background:${t.dot}"></i></span>${t.name}</button>`
             ).join('');
+            let fav;
+            if (favorite) {
+                const team = favoriteTeam();
+                fav = `<div class="set-fav">${crestHtml(team, 'sm')}<span class="fname">${escapeHtml(team.name)}</span><button type="button" id="favClear">Rimuovi</button></div>`;
+            } else {
+                fav = '<p class="set-empty">Nessuna squadra scelta. Tocca la stella accanto a una squadra per sceglierla come preferita.</p>';
+            }
+            setHtml('settings', $('themeMenu'), `<section><h2>Squadra preferita</h2>${fav}</section><section><h2>Tema</h2><div class="theme-grid">${themes}</div></section>`);
         }
 
         function applyTheme(pref, save = true) {
@@ -2620,7 +2984,7 @@
             if (save) {
                 try { localStorage.setItem(THEME_KEY, pref); } catch (e) { /* storage non disponibile */ }
             }
-            renderThemeMenu();
+            renderSettingsMenu();
         }
 
         function setThemeMenu(open) {
@@ -2635,9 +2999,15 @@
         // ---- Avvio ----
         function init() {
             applyTheme(themePref, false);
+            document.body.dataset.mode = view;
+            renderViewSeg();
             renderLeagueFilters();
+            setupChipNav();
             updateDateUI();
             load().then(scheduleTick);
+            setInterval(() => {
+                if (view === 'standings' && selectedLeague && !document.hidden) loadStandings(selectedLeague, true);
+            }, 120000);
 
             $('prevDayBtn').addEventListener('click', () => setDate(addDays(currentDate, -1)));
             $('nextDayBtn').addEventListener('click', () => setDate(addDays(currentDate, 1)));
@@ -2661,7 +3031,31 @@
                 if (!t.closest('.theme-wrap')) setThemeMenu(false);
 
                 const star = t.closest('.star');
-                if (star) { toggleFavorite(star.dataset.key, star.dataset.name); return; }
+                if (star) { toggleFavorite(star.dataset.key, star.dataset.name, star.dataset.logo); return; }
+
+                const viewBtn = t.closest('[data-view]');
+                if (viewBtn) {
+                    view = viewBtn.dataset.view === 'standings' ? 'standings' : 'matches';
+                    document.body.dataset.mode = view;
+                    if (view === 'standings' && selectedLeague) loadStandings(selectedLeague);
+                    render();
+                    return;
+                }
+
+                const pick = t.closest('[data-pick]');
+                if (pick) {
+                    selectedLeague = pick.dataset.pick || null;
+                    renderLeagueFilters();
+                    if (selectedLeague) loadStandings(selectedLeague);
+                    render();
+                    return;
+                }
+
+                if (t.closest('[data-st-retry]')) {
+                    if (selectedLeague) loadStandings(selectedLeague, true).then(() => {});
+                    render();
+                    return;
+                }
 
                 const open = t.closest('.open');
                 if (open) { openMatch(open.dataset.id); return; }
